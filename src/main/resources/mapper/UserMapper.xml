@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.space.alzheimer.dao.UserMapper">
+
+  <select id="queryByName" parameterType="java.lang.String" resultType="com.space.alzheimer.bean.User">
+    SELECT
+        t.id,
+        t.`name`,
+        t.email,
+        t.`password`,
+        t.organization,
+        t.organization_phone organizationPhone,
+        t.`type`,
+        t.role,
+        t.state
+    FROM
+        t_users t
+    WHERE
+	  t.`name` = #{userName}
+  </select>
+
+  <insert id="insert" parameterType="com.space.alzheimer.bean.User">
+    <selectKey keyProperty="id" resultType="java.lang.String" order="BEFORE">
+      select replace(uuid(),'-','') from dual
+    </selectKey>
+    insert into t_users
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="name != null">
+        `name`,
+      </if>
+      <if test="email != null">
+        email,
+      </if>
+      <if test="password != null">
+        password,
+      </if>
+      <if test="organization != null">
+        organization,
+      </if>
+      <if test="organizationPhone != null">
+        organization_phone,
+      </if>
+      <if test="type != null">
+        `type`,
+      </if>
+      <if test="role != null">
+        role,
+      </if>
+      <if test="state != null">
+        state,
+      </if>
+        create_time
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id},
+      </if>
+      <if test="name != null">
+        #{name},
+      </if>
+      <if test="email != null">
+        #{email},
+      </if>
+      <if test="password != null">
+        #{password},
+      </if>
+      <if test="organization != null">
+        #{organization},
+      </if>
+      <if test="organizationPhone != null">
+        #{organizationPhone},
+      </if>
+      <if test="type != null">
+        #{type},
+      </if>
+      <if test="role != null">
+        #{role},
+      </if>
+      <if test="state != null">
+        #{state},
+      </if>
+      now()
+    </trim>
+  </insert>
+
+  <update id="updatePassword">
+    update t_users set `password` = #{password} where id = #{id}
+  </update>
+
+    <select id="queryList" parameterType="com.space.alzheimer.bean.UserVo" resultType="com.space.alzheimer.bean.User">
+      SELECT
+        t.id,
+        t.`name`,
+        t.email,
+        t.`password`,
+        t.organization,
+        t.organization_phone organizationPhone,
+        t.`type`,
+        t.role,
+        t.state
+      FROM
+        t_users t
+      WHERE 1=1
+      <if test="name != null and name != ''">
+        <bind name="userName" value="'%' + name + '%'" />
+        AND t.`name` like #{userName}
+      </if>
+      <if test="state != null and state != ''">
+        AND t.state = #{state}
+      </if>
+      <if test="type != null and type != ''">
+        AND t.`type` = #{type}
+      </if>
+      order by t.create_time
+    </select>
+
+    <update id="updateUserState">
+      update t_users set state = #{state} where id = #{id}
+    </update>
+</mapper>
